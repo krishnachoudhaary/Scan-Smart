@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: user_profiles
+    // Document ID: {uid}
+    // Fields:
+    //   - uid: string (required)
+    //   - name: string (optional)
+    //   - restrictions: list (required)
+    //   - updatedAt: timestamp (optional)
+    //
+    // Collection: user_pantry
+    // Document ID: {itemId}
+    // Fields:
+    //   - barcode: string (required)
+    //   - name: string (required)
+    //   - brand: string (optional)
+    //   - imageUrl: string (optional)
+    //   - quantity: number (required)
+    //   - manufactureDate: string (optional)
+    //   - expiryDate: string (required)
+    //   - nutritionGrade: string (optional)
+    //   - ecoscore: string (optional)
+    //   - novaScore: number (optional)
+    //   - addedAt: timestamp (required)
+    //   - uid: string (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'restrictions']) &&
+             data.uid is string &&
+             data.restrictions is list &&
+             data.restrictions.size() <= 50;
+    }
+
+    function isValidPantryItem(data) {
+      return data.keys().hasAll(['barcode', 'name', 'quantity', 'expiryDate', 'uid', 'addedAt']) &&
+             data.barcode is string && data.barcode.matches('^[0-9]{8,14}$') &&
+             data.name is string && data.name.size() < 200 &&
+             data.quantity is number && data.quantity >= 0 &&
+             data.expiryDate is string &&
+             data.addedAt is timestamp &&
+             data.uid is string &&
+             data.uid == request.auth.uid;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /user_profiles/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && isValidUserProfile(request.resource.data);
+      allow update: if isOwner(uid) && isValidUserProfile(request.resource.data);
+    }
+
+    match /user_pantry/{itemId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.uid == request.auth.uid);
+      allow create: if isAuthenticated() && isValidPantryItem(request.resource.data);
+      allow update: if isDocOwner() && isValidPantryItem(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+  }
+}

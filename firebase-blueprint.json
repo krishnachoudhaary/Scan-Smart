@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "User preferences and dietary restrictions.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User's unique ID" },
+        "name": { "type": "string", "description": "User's display name" },
+        "restrictions": { 
+          "type": "array", 
+          "items": { "type": "string" },
+          "description": "List of restricted ingredients" 
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "restrictions"]
+    },
+    "PantryItem": {
+      "title": "Pantry Item",
+      "description": "A food item saved to the user's pantry.",
+      "type": "object",
+      "properties": {
+        "barcode": { "type": "string" },
+        "name": { "type": "string" },
+        "brand": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "quantity": { "type": "number" },
+        "manufactureDate": { "type": "string", "format": "date" },
+        "expiryDate": { "type": "string", "format": "date" },
+        "nutritionGrade": { "type": "string" },
+        "ecoscore": { "type": "string" },
+        "novaScore": { "type": "number" },
+        "addedAt": { "type": "string", "format": "date-time" },
+        "uid": { "type": "string" }
+      },
+      "required": ["barcode", "name", "quantity", "expiryDate", "uid"]
+    }
+  },
+  "firestore": {
+    "/user_profiles/{uid}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    },
+    "/user_pantry/{itemId}": {
+      "schema": "PantryItem",
+      "description": "User pantry items."
+    }
+  }
+}

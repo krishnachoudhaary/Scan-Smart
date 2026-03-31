@@ -1,0 +1,8 @@
+{
+  "name": "ScanSmart",
+  "description": "Scan product barcodes to reveal health, environmental, and truth-behind-marketing data.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}

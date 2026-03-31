@@ -1,0 +1,87 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-brand-primary: #4F46E5;
+  --color-brand-secondary: #4338CA;
+  --color-brand-success: #10B981;
+  --color-brand-danger: #EF4444;
+  --color-brand-warning: #F59E0B;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-[#F8FAFC] text-slate-900 antialiased selection:bg-indigo-100 selection:text-indigo-900;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-black tracking-tighter;
+  }
+}
+
+@layer utilities {
+  .soft-shadow {
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+  }
+  
+  .glass-effect {
+    @apply sticky z-40 backdrop-blur-[16px] bg-white/70 border-white/20;
+  }
+  
+  .shimmer {
+    @apply relative overflow-hidden bg-slate-100;
+  }
+  
+  .shimmer::after {
+    @apply absolute inset-0 content-[''];
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.6),
+      transparent
+    );
+    animation: shimmer-anim 2s infinite;
+  }
+}
+
+@keyframes shimmer-anim {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes scan-line {
+  0% { top: 0; opacity: 0; transform: scaleX(0.8); }
+  10% { opacity: 1; transform: scaleX(1); }
+  50% { transform: scaleX(1.1); filter: brightness(1.2); }
+  90% { opacity: 1; transform: scaleX(1); }
+  100% { top: 100%; opacity: 0; transform: scaleX(0.8); }
+}
+
+@keyframes pulse-bracket {
+  0%, 100% { transform: scale(1); opacity: 0.7; filter: drop-shadow(0 0 0px rgba(79,70,229,0)); }
+  50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 12px rgba(79,70,229,0.8)); }
+}
+
+.animate-scan-line {
+  animation: scan-line 3s ease-in-out infinite;
+}
+
+.animate-pulse-bracket {
+  animation: pulse-bracket 2s ease-in-out infinite;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.recharts-default-tooltip {
+  @apply bg-white border-none shadow-xl rounded-2xl p-3 font-bold text-xs text-slate-900;
+  background-color: white !important;
+  border: none !important;
+}
